@@ -1,0 +1,20 @@
+﻿@page "/home"
+@implements IDisposable
+
+<div class="mt-4">
+    <Slider />
+</div>
+<div class="mt-4">
+    <Trends />
+    <Popular />
+    <LastUpdate />
+</div>
+
+
+
+@code {
+    public void Dispose()
+    {
+        //this.Dispose();
+    }
+}

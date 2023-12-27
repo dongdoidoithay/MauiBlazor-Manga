@@ -1,0 +1,145 @@
+﻿@inherits MyComponentBase
+@inject NavigationManager NavigationManager
+@inject IDialogService DialogService
+@inject AppService appService
+@inject ISnackbar Snackbar
+@inject ILogger<LastUpdate> _logger
+
+
+
+<div class="header">
+    <div><MudText Typo="Typo.h6">LastUpdate</MudText></div>
+    <MudButton Variant="Variant.Text"
+               Class="ml-5"
+               EndIcon="@Icons.Material.Filled.MoreHoriz"
+               IconSize="Size.Small"
+               Size="Size.Small"
+               Disabled="@(_mydataupdate == null)"
+               OnClick="@(()=>GotoPopup())"
+               Color="Color.Primary">More</MudButton>
+</div>
+@if (_mydataupdate == null)
+{
+    <MudSkeleton Class="mt-1" Height="40px" />
+    <MudSkeleton Class="mt-1" Height="40px" />
+    <MudSkeleton Class="mt-1" Height="40px" />
+    <MudSkeleton Class="mt-1" Height="40px" />
+}
+else
+{
+    @if (!_mydataupdate.Data.Any())
+    {
+        <Empty OnRefresh="GetPopularListAsync" />
+    }
+    else
+    {
+        <MudList Clickable="true">
+            @foreach (var myFavorite in _mydataupdate.Data.Select((item, index) => new { item, index }))
+            {
+                {
+                    CssStyle = "height:30px; width:30px;border-color:" + hexRandomColor() + ";";
+
+                }
+                <MudListItem>
+                    <div class="d-flex align-center my-lastupdate" @onclick="@(()=>GotoDetail(myFavorite.item.IdDoc))">
+                        <div class="d-flex flex-grow-0">
+                            <MudAvatar 
+                                       Variant="Variant.Outlined"
+                                       Class="mr-3"
+                                       Style="@CssStyle">
+                                <p class="p-3">@((_selected - 1) * (int.Parse(EndPoint.ITEM_PAGE_COUNT)) + (myFavorite.index + 1))</p>
+                            </MudAvatar>
+                        </div>
+                        <div class="d-flex align-center flex-grow-1 info">
+                            <div>
+                                <div class="info-name">@myFavorite.item.Name</div>
+                                <div class="music-count">
+                                    Update: @UtilsDate.GetDate(myFavorite.item.Date)
+                                </div>
+                                <div class="music-count">Status: @myFavorite.item.Status</div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-center flex-grow-0 ">
+                        chapter
+                        </div>
+                    </div>
+                </MudListItem>
+                <MudHidden Breakpoint="Breakpoint.MdAndUp">
+                    <MudDivider />
+                </MudHidden>
+            }
+        </MudList> @* SelectedChanged="PageChanged" *@
+        <div class="d-flex flex-column align-center">
+            <MudPagination Selected="_selected" SelectedChanged="PageChanged" Count="@((int)_mydataupdate?.TotalPage)" Class="pa-4" />
+        </div>
+    }
+}
+
+@code {
+    private int _selected = 1;
+    private int _totalPage = 1;
+    public string CssStyle="";
+    private ResponseDataLastUppdate? _mydataupdate;
+    private static readonly SemaphoreSlim ComponentsReloadSlim = new(1, 1);
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        if (IsNotLogin)
+        {
+            NavigationManager.NavigateTo("/login");
+            return;
+        }
+
+        await GetPopularListAsync();
+    }
+
+    private async Task GetPopularListAsync()
+    {
+        await ComponentsReloadSlim.WaitAsync();
+        try
+        {
+            _mydataupdate = null;
+            _mydataupdate = await appService.GetDataLastUpdate(_selected - 1);
+
+            Console.WriteLine(_mydataupdate);
+            await InvokeAsync(StateHasChanged);
+        }catch(Exception ex)
+        {
+            Console.WriteLine($"Data lastupdate is loaded and failed:{ex.Message}");
+            _logger.LogError(ex, "Data lastupdate is loaded and failed。");
+        }
+        finally
+        {
+            ComponentsReloadSlim.Release();
+        }
+    }
+
+    private void GotoPopup()
+    {
+        NavigationManager.NavigateTo($"/popup");
+    }
+    private void GotoDetail(string idDoc)
+    {
+        NavigationManager.NavigateTo($"/detail/{idDoc}");
+    }
+    private async void PageChanged(int i)
+    {
+        _selected = i;
+        //await InvokeAsync(StateHasChanged);
+        await GetPopularListAsync();
+        // await InvokeAsync(StateHasChanged);
+    }
+
+    private string hexRandomColor()
+    {
+        Random random = new Random();
+        var colorBytes = new byte[3];
+
+        random.NextBytes(colorBytes);
+        return String.Format("#{0:X2}{1:X2}{2:X2}",
+              colorBytes[0], colorBytes[1], colorBytes[2]);
+
+    }
+}

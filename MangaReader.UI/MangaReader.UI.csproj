@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Components\Page\**" />
+    <Content Remove="Components\Page\**" />
+    <EmbeddedResource Remove="Components\Page\**" />
+    <None Remove="Components\Page\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Components\Home\Popular - Copy.razor.css" />
+    <None Remove="Components\Home\Popular.razor.css" />
+    <None Remove="Components\Home\Trends.razor.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Components\Home\Popular.razor.css" />
+    <Content Include="Components\Home\Trends.razor.css" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.0" />
+    <PackageReference Include="MudBlazor" Version="6.11.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MangaReader.Shared\MangaReader.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Components\View\" />
+  </ItemGroup>
+
+</Project>
