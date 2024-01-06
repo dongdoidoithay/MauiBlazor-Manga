@@ -1,4 +1,5 @@
-﻿using System.Reflection.Metadata;
+﻿using System;
+using System.Reflection.Metadata;
 using System.Text.Json.Serialization;
 
 namespace MangaReader.Shared.Service.Response;
@@ -193,4 +194,90 @@ public class DetailDocument
     public string NameSeoChapter { get; set; }
     [JsonPropertyName("date")]
     public DateTime? Date { get; set; }
+}
+
+
+
+public class Chapter
+{
+    [JsonPropertyName("slug")]
+    public string slug { get; set; }
+
+    [JsonPropertyName("idDoc")]
+    public string idDoc { get; set; }
+
+    [JsonPropertyName("idDetail")]
+    public string idDetail { get; set; }
+
+    [JsonPropertyName("nameChapter")]
+    public string nameChapter { get; set; }
+
+    [JsonPropertyName("nameDoc")]
+    public string nameDoc { get; set; }
+
+    [JsonPropertyName("nameSeoChapter")]
+    public string nameSeoChapter { get; set; }
+
+    [JsonPropertyName("date")]
+    public DateTime date { get; set; }
+
+    [JsonPropertyName("urlDowload")]
+    public object urlDowload { get; set; }
+}
+
+public class ResponseDataChapter
+{
+    [JsonPropertyName("totalRecode")]
+    public int totalRecode { get; set; }
+
+    [JsonPropertyName("currentPage")]
+    public string currentPage { get; set; }
+
+    [JsonPropertyName("totalPage")]
+    public int totalPage { get; set; }
+
+    [JsonPropertyName("data")]
+    public List<Chapter> data { get; set; }
+}
+
+public class ResponseViewChapter
+{
+    [JsonPropertyName("slug")]
+    public string slug { get; set; }
+
+    [JsonPropertyName("idDoc")]
+    public string idDoc { get; set; }
+
+    [JsonPropertyName("idDetail")]
+    public string idDetail { get; set; }
+
+    [JsonPropertyName("nameChapter")]
+    public string nameChapter { get; set; }
+
+    [JsonPropertyName("nameDoc")]
+    public string nameDoc { get; set; }
+
+    [JsonPropertyName("nameSeoChapter")]
+    public string nameSeoChapter { get; set; }
+
+    [JsonPropertyName("date")]
+    public DateTime date { get; set; }
+
+    [JsonPropertyName("view")]
+    public int view { get; set; }
+
+    [JsonPropertyName("urlDowload")]
+    public object urlDowload { get; set; }
+
+    [JsonPropertyName("source")]
+    public string source { get; set; }
+
+    [JsonPropertyName("idDetailNext")]
+    public string idDetailNext { get; set; }
+
+    [JsonPropertyName("idDetailPrev")]
+    public string idDetailPrev { get; set; }
+
+    [JsonPropertyName("manga")]
+    public Document manga { get; set; }
 }

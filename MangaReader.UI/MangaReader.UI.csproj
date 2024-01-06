@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -14,14 +14,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Components\Home\Popular - Copy.razor.css" />
-    <None Remove="Components\Home\Popular.razor.css" />
-    <None Remove="Components\Home\Trends.razor.css" />
+    <Content Remove="Pages\DetailPageV2.razor" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Components\Home\Popular.razor.css" />
-    <Content Include="Components\Home\Trends.razor.css" />
+    <None Remove="Components\Mobile\Home\Popular - Copy.razor.css" />
+    <None Remove="Components\Mobile\Home\Popular.razor.css" />
+    <None Remove="Components\Mobile\Home\Trends.razor.css" />
+    <None Remove="Pages\DetailPageV2.razor.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Components\Mobile\Home\Popular.razor.css" />
+    <Content Include="Components\Mobile\Home\Trends.razor.css" />
   </ItemGroup>
 
 
@@ -39,7 +44,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Components\View\" />
+    <Folder Include="Components\Desktop\" />
+    <Folder Include="Components\Tablet\" />
+    <Folder Include="Components\Mobile\View\" />
   </ItemGroup>
 
 </Project>

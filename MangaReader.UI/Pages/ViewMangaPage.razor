@@ -1,0 +1,284 @@
+﻿@page "/view-manga/{idDoc}/{idChapter}"
+@layout DetailLayout
+
+@inherits MyComponentBase
+@inject NavigationManager NavigationManager
+@inject IDialogService DialogService
+@inject AppService appService
+@inject ISnackbar Snackbar
+@inject ILogger<ViewMangaPage> _logger
+
+@inject IJSRuntime JSRuntime
+@implements IDisposable
+
+<div class="wrap" id="wrap" >
+
+    <!-- header -->
+    <header role="banner" id="header" class="sub_header" style="display: @toolbar">
+        @if (_dataChapter != null)
+        {
+            <!-- title -->
+            <h1 class="h1_viewer"><a @onclick="@(()=>GoBack())" class="_goTop">@_dataChapter.nameChapter</a></h1>
+            <!-- //title -->
+            <a href="/detail/@idDoc" class="btn_list v2 NPI=a:enc,g:en_en"><span class="u_vc">list</span></a>
+            <a href="#" id="shareLayerPopBtn" class="btn_share NPI=a:share,g:en_en" onclick="return false;"><span class="u_vc">share</span></a>
+        }
+    </header>
+    <!-- //header -->
+    <hr/>
+    <!-- ct -->
+    <div id="ct" role="main" @onclick="@(()=>OnClickMain())">
+        <div class="viewer_img" id="viewer" @ref="scrollElement" @onscroll="OnScroll">
+            @if (_souce != null && _souce.Count() > 0)
+            {
+                @foreach (var item in _souce)
+                {
+                    <div class="flick-ct _imageWrap" style="width: 100%; text-align: center;">
+                        <img style="width: 100%; text-align: center;" src="@item" />
+                    </div>
+                }
+            }
+        </div>
+        <div class="viewer_ad_area" id="viewerAdWrapper"></div>
+       
+        <div class="viewer_cont_wrap _readComplete">
+            @if (_dataChapter != null)
+            {
+                <a id="creatorNoteArea" class="creator_note ">
+                    <h2 class="title">Info</h2>
+                    <div class="author_area">
+                        <div class="profile">
+                            <img src="@_dataChapter?.manga?.Image" width="100%" alt="@_dataChapter?.manga?.Name">
+                        </div>
+                        <span class="author">
+                            <span class="link"><span class="author_name">@_dataChapter?.manga?.Auth</span></span>
+                        </span>
+                    </div>
+                    <p class="author_text">
+
+                        @_dataChapter?.manga?.Desc
+                    </p>
+                </a>
+                <div class="viewer_sns_area">
+                    <div class="sns_group" id="_shareArea">
+                        <a href="#" class="_viewerSnsBtn btn_sns line btn_line N=a:vic*b.line,g:en_en" data-sns="LINE" onclick="return false;">LINE</a>
+                        <a href="#" class="_viewerSnsBtn btn_sns facebook btn_facebook N=a:vic*b.fb,g:en_en" data-sns="FACEBOOK" onclick="return false;">Facebook</a>
+                        <a href="#" class="_viewerSnsBtn btn_sns twitter btn_twitter N=a:vic*b.tw,g:en_en" data-sns="TWITTER" onclick="return false;">Twitter</a>
+                        <a href="#" class="_viewerSnsBtn btn_sns tumblr btn_tumblr N=a:vic*b.tu,g:en_en" data-sns="TUMBLR" onclick="return false;">Tumblr</a>
+                        <a href="#" class="_viewerSnsBtn btn_sns reddit btn_reddit N=a:vic*b.rd,g:en_en" data-sns="REDDIT" onclick="return false;">Reddit</a>
+                    </div>
+                    <p class="fav_area"><a href="#" class="btn_favorites NPI=a:addfav,g:en_en" data-page-source="ViewerEnd" onclick="return false;">Subscribe</a></p>
+                </div>
+                <div class="report_area" id="_reportArea">
+                    <a href="#" class="btn_report _btnReport">Report</a>
+                </div>
+                <div class="viewer_also_like" style="display:none">
+                    <h3>You may also like</h3>
+                     <ul class="lst_type7">
+
+                    </ul>
+                </div>
+                <!-- comment style="display:none"-->
+                <div class="viewer_best_comment _viewerBestComment" style="display:none;">
+                    <a href="#">Top Comments</a>
+                <div id="cbox_module" class="u_cbox">
+                    <div class="u_cbox_wrap u_cbox_en u_cbox_type_sort_best">
+                        <div class="u_cbox_notice u_cbox_notice_none" style="display: none;"></div>
+                        <div class="u_cbox_sort" style="">
+                            <strong id="cbox_module_wai_u_cbox_sort_label" class="u_vc">Sort Option</strong>
+                            <div class="u_cbox_sort_option">
+                                <div class="u_cbox_sort_scroller" style="">
+                                    <ul role="tablist" aria-labelledby="cbox_module_wai_u_cbox_sort_label" class="u_cbox_sort_option_list">
+                                        <li role="presentation" class="u_cbox_sort_option_wrap u_cbox_sort_option_on"><a href="#" id="cbox_module_wai_u_cbox_sort_option_tab1" role="tab" aria-selected="true" aria-controls="cbox_module_wai_u_cbox_content_wrap_tabpanel" data-action="sort#request" data-param="best" data-log="RPS.best" class="u_cbox_select"><span class="u_cbox_ico_select"></span><span class="u_cbox_sort_label">best</span></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="u_cbox_head_tools"></div>
+                        </div>
+                        <div id="cbox_module_wai_u_cbox_content_wrap_tabpanel" tabindex="0" class="u_cbox_content_wrap" style="outline: 0" role="tabpanel" aria-labelledby="cbox_module_wai_u_cbox_sort_option_tab1">
+                            <div class="u_cbox_comment_none">
+                                <div class="u_cbox_con_inform"><span class="u_cbox_ico_comment_none"></span><span class="u_cbox_contents_none">No BEST comments.</span></div>
+                            </div>
+                            <ul class="u_cbox_list" style="display: none;"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            }
+            <div class="viewer_footer" style="display: @toolbar">
+                @*  btn_likeit off NPI=a:like,g:en_en *@
+                <a href="#" class="btn_likeit off" id="likeIt"><span class="u_vc">like it</span>@_dataChapter?.view </a>
+                <a href="#" class="btn_comment NPI=a:comment,g:en_en" style="">
+                    <span class="u_vc">comment</span>
+                    <span id="commentCount">@counter</span>
+                </a>
+                <span class="paginate">
+                    @if (_dataChapter != null)
+                    {
+                        if (_dataChapter.idDetailPrev == "")
+                        {
+                            <span class="lk_prev">
+                                <span class="u_vc">prev 1</span>
+                            </span>
+                        }
+                        else
+                        {
+                            <a @onclick="@(()=>GoToview(idDoc,_dataChapter.idDetailPrev))" class="lk_prev"><span class="u_vc">prev</span></a>
+                        }
+                        <span class="num"><strong>#@_dataChapter.idDetail</strong></span>
+                        if (_dataChapter.idDetailNext == "")
+                        {
+                            <span class="lk_next">
+                                <span class="u_vc">next 1</span>
+                            </span>
+                        }
+                        else
+                        {
+                            <a @onclick="@(()=>GoToview(idDoc,_dataChapter.idDetailNext))" class="lk_next"><span class="u_vc">next</span></a>
+                        }
+                    }
+                </span>
+            </div>
+        </div>
+    </div>
+    <!-- //ct -->
+</div>
+
+@code {
+    [Parameter]
+    public string idDoc { get; set; }
+    [Parameter]
+    public string idChapter { get; set; }
+
+    private ResponseViewChapter _dataChapter;
+    private string[] _souce;
+
+    //hien thi
+    private string toolbar = "block";
+    //scroll
+    ElementReference scrollElement;
+    DotNetObjectReference<ViewMangaPage> ObjectReference;
+    private int counter;
+
+    // private void OnScroll()
+    // {
+    //     counter++;
+    // }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+       
+        if (IsNotLogin)
+        {
+            NavigationManager.NavigateTo("/login");
+            return;
+        }
+        await GetChapterDataListAsync();
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+        _souce = null;
+        await GetChapterDataListAsync();
+        toolbar = "block";
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void GoToview(string idDocument, string idChapter)
+    {
+        NavigationManager.NavigateTo($"/view-manga/{idDocument}/{idChapter}");
+    }
+    private void GoBack()
+    {
+        if(!string.IsNullOrEmpty(idDoc))
+            NavigationManager.NavigateTo($"/detail/{idDoc}");
+        else
+        {
+            Snackbar.Add("Not Back by Doc Id is null", Severity.Warning);
+        }
+
+    }
+    private async Task OnClickMain()
+    {
+        if (toolbar == "none")
+            toolbar = "block";
+        else
+            toolbar = "none";
+        await InvokeAsync(StateHasChanged);
+    }
+    private async Task OnScrollMain()
+    {
+        toolbar = "none";
+        await InvokeAsync(StateHasChanged);
+    }
+    [JSInvokable("OnScroll")]
+    public void OnScroll()
+    {
+        counter++;
+        //TODO: How to get hold of the razor component instance?
+        toolbar = "none";
+        StateHasChanged();
+    }
+    // [JSInvokable]
+    // public async Task OnScroll()
+    // {
+    //     toolbar = "none";
+    //     StateHasChanged();
+    // }
+    // [JSInvokable]
+    // public async Task OnScroll(ScrollEventArgs args)
+    // {
+    //     Console.WriteLine("Scroll event detected! Y-axis scroll:");
+    //     toolbar = "none";
+    //     await InvokeAsync(StateHasChanged);
+    // }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        //     if (firstRender)
+        //     {
+        //        // await JSRuntime.InvokeVoidAsync("addEventListener", "scroll", new { handler = "scrollHandler" });
+        //        // await JSRuntime.InvokeVoidAsync("onDivScroll",scrollElement);
+        //     }
+        await base.OnAfterRenderAsync(firstRender);
+        if (firstRender)
+        {
+            ObjectReference = DotNetObjectReference.Create(this);
+            //await JSRuntime.InvokeVoidAsync("blazorHybrid.onScroll", ObjectReference);
+            //await JSRuntime.InvokeVoidAsync("onDivScroll",scrollElement);
+            await JSRuntime.InvokeVoidAsync("registerScroll", scrollElement);
+        }
+    }
+    private async Task GetChapterDataListAsync()
+    {
+        _dataChapter = null;
+        try
+        {
+            _dataChapter = await appService.GetViewManga(idDoc, idChapter); ;
+
+        }
+        catch (Exception ex)
+        {
+
+        }
+        finally
+        {
+            if (_dataChapter != null)
+            {
+                _souce = _dataChapter?.source.Split(",");
+            }
+            await InvokeAsync(StateHasChanged);
+        }
+        Console.WriteLine();
+    }
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+       
+        if (ObjectReference != null)
+        {
+            //Now dispose our object reference so our component can be garbage collected
+            ObjectReference.Dispose();
+        }
+    }
+}

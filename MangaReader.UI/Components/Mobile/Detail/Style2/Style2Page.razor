@@ -1,0 +1,100 @@
+﻿@inject IDialogService DialogService
+@inject AppService appService
+@inject ISnackbar Snackbar
+@inject ILogger<Style2Page> _logger
+
+@if (_dataInfo == null)
+{
+    <MudSkeleton Class="mt-1" Height="40px" />
+    <MudSkeleton Class="mt-1" Height="40px" />
+    <MudSkeleton Class="mt-1" Height="40px" />
+    <MudSkeleton Class="mt-1" Height="40px" />
+}
+else
+{
+    <div class="background_pic" id="_backgroundImage" style="background-color:@(colorSelect);">
+        <img src="@(_dataInfo?.image)" width="100%" alt="@(_dataInfo?.name)" style="opacity:0.4;"/>
+    </div>
+    <div class="wrap" id="wrap">
+       @*  background-image:url(@(_dataInfo?.image)); *@
+        <header role="banner" id="header" class="sub_header2 " style="background-color:@(colorSelect);">
+            <a id="homeButton" href="#" class="btn_home">
+                <span class="u_vc">home</span>
+            </a>
+            <a href="#" class="btn_info" onclick="return false;">
+                <span class="u_vc">information</span>
+            </a>
+
+            <a href="#" class="btn_fav " data-page-source="EpisodeList" onclick="return false;">
+                <span class="fav_inner">Subscribe</span>
+            </a>
+            <a href="#" class="_shareLayerPopBtn btn_share " onclick="return false;">
+                <span class="u_vc">share</span>
+            </a>
+        </header>
+
+        <div id="ct" role="main" class="ct_type4" >
+            <div class="detail_info ">
+                <p class="genre">@* @_dataInfo.lsgenres.Select(p=>p.name) *@</p>
+                <p class="subj">@_dataInfo.name</p>
+                <p class="author">
+                    <a href="#" class="link _gaLoggingLink">Rachel Smythe</a>
+                </p>
+                <a class="_btnInfo" onclick="return false;">
+                    <p class="summary"><span class="ellipsis">@_dataInfo.desc</span></p>
+                </a>
+                <p class="grade_area">
+                    <span class="views">@_dataInfo.view</span>
+                    <span class="subscribers">6.4M</span>
+                    <a id="rateButton" class="NPI=a:rate,g:en_en">
+                        <span class="grade">StarScore</span>
+                        <em class="grade_num" id="starScoreAverage">@_dataInfo.rate</em>
+                        <span class="btn_rate">RATE</span>
+                    </a>
+                </p>
+                <p class="btn_area">
+                    <a href="#" class="btn_type3" id="_btnEpisode">Continue reading</a>
+                </p>
+            </div>
+            <ChapterList idDoc="@IdDoc" />
+
+        </div>
+    </div>
+}
+
+
+@code {
+    [Parameter]
+    public string IdDoc { get; set; }
+    [Parameter]
+    public string colorSelect { get; set; }
+    private ResponseDataDocument? _dataInfo;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        await GetInfoAsync();
+    }
+
+    private async Task GetInfoAsync()
+    {
+        _dataInfo = null;
+        try
+        {
+            _dataInfo = await appService.GetDataInfo(IdDoc);
+
+        }
+        catch (Exception ex)
+        {
+
+        }
+        finally
+        {
+
+        }
+        Console.WriteLine();
+    }
+
+}

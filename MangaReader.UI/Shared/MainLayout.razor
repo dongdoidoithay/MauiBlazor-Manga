@@ -1,32 +1,30 @@
 ﻿@inherits LayoutComponentBase
 @inject NavigationManager NavigationManager
 
-<MudThemeProvider/>
-<MudDialogProvider/>
-<MudSnackbarProvider/>
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
 
 
 <ErrorBoundary @ref="@_errorBoundary">
     <ChildContent>
         <div class="page">
             <MudHidden Breakpoint="Breakpoint.SmAndDown">
-                <div class="page-header d-flex" >
+                <div class="page-header d-flex">
                     <div class="logo d-flex align-center">
                         <div class="title ml-2">MANGA</div>
                     </div>
                     <div class="d-flex align-center" @onmouseup:stopPropagation="true" @onmousedown:stopPropagation="true">
-                       
+                        <NavBeforeNext />
                     </div>
                     <div class="flex-grow-1 ml-2 d-flex align-center">
                         @if (!NavigationManager.Uri.EndsWith("/search"))
                         {
                             <div style="width:250px" @onmouseup:stopPropagation="true" @onmousedown:stopPropagation="true">
-                               
                             </div>
                         }
                     </div>
                     <div @onmouseup:stopPropagation="true" @onmousedown:stopPropagation="true">
-                       
                     </div>
                 </div>
             </MudHidden>
@@ -40,7 +38,6 @@
                 </div>
             </div>
             <div class="page-bottom">
-               
             </div>
         </div>
     </ChildContent>
@@ -73,7 +70,7 @@
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-       // _customTheme = CustomTheme.Theme;
+        // _customTheme = CustomTheme.Theme;
     }
 
 
@@ -106,9 +103,9 @@
 
     private void ResetError(Exception ex)
     {
-      
+
         _errorBoundary?.Recover();
     }
 
-  
+
 }

@@ -1,0 +1,54 @@
+﻿@page "/detail/{IdDoc}"
+@layout DetailLayout
+@implements IDisposable
+
+@inject IDialogService DialogService
+@inject AppService appService
+@inject ISnackbar Snackbar
+@inject ILogger<DetailPage> _logger
+@inject NavigationManager NavigationManager
+
+
+@if (StyleSelect == StyleMode.Style1)
+{
+    <Style1Page IdDoc="@IdDoc" colorSelect="@colorSelect" />
+}
+else
+{
+    <Style2Page IdDoc="@IdDoc" colorSelect="@colorSelect" />
+}
+
+
+@code {
+    [Parameter]
+    public string IdDoc { get; set; }
+    //stylee
+    private StyleMode StyleSelect;
+    // hex color
+    private List<string> _colors = new List<string>() { "#8b00e9", "#e9ce00", "#e90030", "#cb00e9", "#0073e9" };
+    private string colorSelect;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        Random rnd = new Random();
+        StyleSelect = StyleMode.Style2;// (StyleMode)rnd.Next(0, 2);
+        colorSelect = _colors[rnd.Next(0, _colors.Count - 1)];
+
+    }
+
+    protected override  Task OnParametersSetAsync()
+    {
+        Random rnd = new Random();
+        StyleSelect = StyleMode.Style2;// (StyleMode)rnd.Next(0, 2);
+        colorSelect = _colors[rnd.Next(0, _colors.Count - 1)];
+        StateHasChanged();
+        return  base.OnParametersSetAsync();
+
+    }
+
+    public void Dispose()
+    {
+        //this.Dispose();
+    }
+}

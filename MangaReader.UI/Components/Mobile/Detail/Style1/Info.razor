@@ -1,0 +1,87 @@
+﻿@inherits MyComponentBase
+@inject NavigationManager NavigationManager
+@inject IDialogService DialogService
+@inject AppService appService
+@inject ISnackbar Snackbar
+
+@inject ILogger<Info> _logger
+@if (_dataInfo == null)
+{
+    <MudSkeleton Class="mt-1" Height="40px" />
+    <MudSkeleton Class="mt-1" Height="40px" />
+    <MudSkeleton Class="mt-1" Height="40px" />
+    <MudSkeleton Class="mt-1" Height="40px" />
+}
+else
+{
+    <div class="detail_info challenge">
+        <span class="detail_chal_pic">
+            <img src="@(_dataInfo?.image)" width="100%" alt="Kitsune King fantasy comic" onerror="this.onerror=null;this.src='https://webtoons-static.pstatic.net/image/mobile/noimg2.gif?dt=2017082101'">
+        </span>
+        <p class="genre">G1,g2 @* @_dataInfo.lsgenres.Select(p=>p.name) *@</p>
+        <span class="detail_badge">
+            <span class="ico_badge num">14k V</span>
+        </span>
+        <p class="subj">@_dataInfo.name</p>
+        <p class="author">
+            <a href="#" class="link _gaLoggingLink">Rachel Smythe</a>
+        </p>
+        <a class="_btnInfo" onclick="return false;">
+            <p class="summary"><span class="ellipsis">@_dataInfo.desc</span></p>
+        </a>
+        <p class="grade_area">
+            <span class="views">@_dataInfo.view</span>
+            <span class="subscribers">6.4M</span>
+            <a id="rateButton" class="NPI=a:rate,g:en_en">
+                <span class="grade">StarScore</span>
+                <em class="grade_num" id="starScoreAverage">@_dataInfo.rate</em>
+                <span class="btn_rate">RATE</span>
+            </a>
+        </p>
+        <p class="btn_area">
+            <a href="#" class="btn_type3" id="_btnEpisode">Continue reading</a>
+        </p>
+    </div>
+
+}
+@code {
+    [Parameter]
+    public string iddoc { get; set; }
+
+    private ResponseDataDocument? _dataInfo;
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        if (IsNotLogin)
+        {
+            NavigationManager.NavigateTo("/login");
+            return;
+        }
+        await GetTrendsListAsync();
+    }
+
+    private async Task GetTrendsListAsync()
+    {
+        _dataInfo = null;
+        try
+        {
+            _dataInfo = await appService.GetDataInfo(iddoc);
+
+        }
+        catch (Exception ex)
+        {
+
+        }
+        finally
+        {
+
+        }
+        Console.WriteLine();
+    }
+
+
+    private void GotoPopup()
+    {
+        NavigationManager.NavigateTo($"/trend");
+    }
+}

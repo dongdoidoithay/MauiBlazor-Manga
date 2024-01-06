@@ -1,5 +1,8 @@
 ﻿@page "/home"
+
+@inject NavigationManager NavigationManager
 @implements IDisposable
+
 
 <div class="mt-4">
     <Slider />
@@ -9,8 +12,7 @@
     <Popular />
     <LastUpdate />
 </div>
-
-
+      
 
 @code {
     public void Dispose()

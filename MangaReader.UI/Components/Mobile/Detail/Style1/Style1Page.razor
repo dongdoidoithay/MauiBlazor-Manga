@@ -1,0 +1,27 @@
+﻿  <div class="wrap" id="wrap">
+<header role="banner" id="header" class="sub_header2 " style="background-color:@(colorSelect);">
+    <a id="homeButton" href="/home" class="btn_home">
+        <span class="u_vc">home</span>
+    </a>
+    <a href="#" class="btn_info" onclick="return false;">
+        <span class="u_vc">information</span>
+    </a>
+
+    <a href="#" class="btn_fav " data-page-source="EpisodeList" onclick="return false;">
+        <span class="fav_inner">Subscribe</span>
+    </a>
+    <a href="#" class="_shareLayerPopBtn btn_share " onclick="return false;">
+        <span class="u_vc">share</span>
+    </a>
+</header>
+<div id="ct" role="main" class="ct_type4" style="background-color:@(colorSelect);">
+    <Info iddoc="@IdDoc" />
+    <ChapterList idDoc="@IdDoc" />
+</div>
+</div>
+@code {
+    [Parameter]
+    public string IdDoc { get; set; }
+    [Parameter]
+    public string colorSelect { get; set; }
+}

@@ -17,6 +17,9 @@ public class AppService : BaseService
     ResponseDataLastUppdate DataLastuppdate;
     //home request
     ResponseDataDocument DataDocument;
+    ResponseDataChapter DataChapter;
+    //detail
+    ResponseViewChapter DataView;
     public async Task<List<ResponseTrend>> GetDataTrend()
     {
         var response = await GetDataAsync($"{UrLBase}{EndPoint.homeTrend}");
@@ -92,36 +95,50 @@ public class AppService : BaseService
         return DataDocument;
     }
     ////chapter manga
-    //public async Task<ResponseDataChapter> GetChapterInfo(string idmanga, string page, string idetail, string sort)
-    //{
-    //    int _page = 0;
-    //    if (!string.IsNullOrEmpty(page))
-    //        _page = int.Parse(page);
-    //    string _idetail = "all";
-    //    if (!string.IsNullOrEmpty(idetail))
-    //        _idetail = idetail;
-    //    string _sort = "ASC";
-    //    if (!string.IsNullOrEmpty(sort))
-    //        _sort = sort;
-    //    var response = await GetDataAsync($"{UrLBase}{EndPoint.infoChapter}{idmanga}/16/{_page}/{_idetail}/{_sort}");
-    //    if (response.IsSuccessStatusCode)
-    //    {
-    //        //string _key = await response.Content.ReadAsStringAsync();
-    //        DataChapter = await response.Content.ReadFromJsonAsync(ResponseDataChapterContext.Default.ResponseDataChapter);
-    //    }
-    //    return DataChapter;
-    //}
+    public async Task<ResponseDataChapter> GetChapterInfo(string idmanga, string page, string idetail, string sort)
+    {
+        int _page = 0;
+        if (!string.IsNullOrEmpty(page))
+            _page = int.Parse(page);
+        string _idetail = "all";
+        if (!string.IsNullOrEmpty(idetail))
+            _idetail = idetail;
+        string _sort = "ASC";
+        if (!string.IsNullOrEmpty(sort))
+            _sort = sort;
+        var response = await GetDataAsync($"{UrLBase}{EndPoint.infoChapter}{idmanga}/16/{_page}/{_idetail}/{_sort}");
+        if (response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            // Deserialize 
+            DataChapter = Deserialize<ResponseDataChapter>(content);
+        }
+        return DataChapter;
+    }
 
     ////view manga
-    //public async Task<ResponseViewChapter> GetViewManga(string idmanga, string idchapter)
+    public async Task<ResponseViewChapter> GetViewManga(string idmanga, string idchapter)
+    {
+        var response = await GetDataAsync($"{UrLBase}{EndPoint.viewmanga}{idmanga}/{idchapter}");
+        if (response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            // Deserialize 
+            DataView = Deserialize<ResponseViewChapter>(content);
+        }
+
+        return DataView;
+    }
+
+    //public async Task GetViewManga(string idmanga, string idchapter)
     //{
     //    var response = await GetDataAsync($"{UrLBase}{EndPoint.viewmanga}{idmanga}/{idchapter}");
     //    if (response.IsSuccessStatusCode)
     //    {
     //        string _key = await response.Content.ReadAsStringAsync();
-    //        DataView = await response.Content.ReadFromJsonAsync(ResponseViewChapterContext.Default.ResponseViewChapter);
+    //       // DataView = await response.Content.ReadFromJsonAsync(ResponseViewChapterContext.Default.ResponseViewChapter);
     //    }
 
-    //    return DataView;
+    //    //return DataView;
     //}
 }

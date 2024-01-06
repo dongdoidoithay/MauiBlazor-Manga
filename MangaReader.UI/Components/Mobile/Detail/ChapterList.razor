@@ -1,0 +1,120 @@
+﻿@inherits MyComponentBase
+@inject NavigationManager NavigationManager
+@inject IDialogService DialogService
+@inject AppService appService
+@inject ISnackbar Snackbar
+
+@inject ILogger<ChapterList> _logger
+
+
+@if (_dataChapter == null)
+{
+    <MudSkeleton Class="mt-1" Height="40px" />
+    <MudSkeleton Class="mt-1" Height="40px" />
+    <MudSkeleton Class="mt-1" Height="40px" />
+    <MudSkeleton Class="mt-1" Height="40px" />
+}
+else
+{
+    @if (!_dataChapter.data.Any())
+    {
+        <Empty OnRefresh="GetChapterDataListAsync" />
+    }
+    else
+    {
+        <ul class="lst_type3 detail_white" id="_episodeList">
+            <li>
+                <a class="preview_pay_area">
+                    <div class="txt_area _episode_list_more_view_app_download">
+                        <div class="txt">
+                            Read <em>3</em> more new episodes on the updated app! <em>Download the app now.</em>
+                        </div>
+                    </div>
+                </a>
+            </li>
+            @foreach (var myFavorite in _dataChapter.data.Select((item, index) => new { item, index }))
+            {
+                <li id="episode_261" class="_episodeItem reading" data-episode-no="@(myFavorite.item.idDetail)">
+                    <a @onclick="@(()=>GoToview(myFavorite.item.idDoc,myFavorite.item.idDetail))" class="list">
+                        <div class="row">
+                            <div class="col pic">
+                                <div class="img_canvas _thumbnail">
+                                    @((_selected - 1) * (int.Parse("16")) + (myFavorite.index + 1))
+                                </div>
+                            </div>
+                            <div class="col info">
+                                <p class="sub_title">
+                                    <span class="ellipsis">@myFavorite.item.nameChapter</span>
+                                    <span class="icon_wrap">
+                                    </span>
+                                </p>
+                                <div class="sub_info">
+                                    <span class="likeList _likeMark"><span class="u_vc">likeit</span>80k</span>
+                                    <span class="date">@(myFavorite.item.date)</span>
+                                </div>
+                            </div>
+                            <div class="col num">#@(myFavorite.item.idDetail)</div>
+                        </div>
+                    </a>
+                </li>
+            }
+            <li id="lastSpace" style="height: 0; border-bottom: none;"></li>
+        </ul>
+        <div class="d-flex flex-column align-center pagin-botton">
+            <MudPagination Selected="_selected" SelectedChanged="PageChanged" Count="@((int)_dataChapter?.totalPage)" MiddleCount="3" BoundaryCount="2" Rectangular="true" Size="Size.Small" Variant="Variant.Outlined" />
+        </div>
+    }
+}
+
+@code {
+    [Parameter]
+    public string idDoc { get; set; }
+    private ResponseDataChapter? _dataChapter;
+    private int _selected = 1;
+    private int _totalPage = 1;
+
+    private string _chapterSearch = null;
+    private string _sort = "ASC";
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        if (IsNotLogin)
+        {
+            NavigationManager.NavigateTo("/login");
+            return;
+        }
+        await GetChapterDataListAsync();
+    }
+
+    private async Task GetChapterDataListAsync()
+    {
+        _dataChapter = null;
+        try
+        {
+            _dataChapter = await appService.GetChapterInfo(idDoc,(_selected-1).ToString(),_chapterSearch,_sort);
+
+        }
+        catch (Exception ex)
+        {
+
+        }
+        finally
+        {
+            await InvokeAsync(StateHasChanged);
+        }
+        Console.WriteLine();
+    }
+    private async void PageChanged(int i)
+    {
+        _selected = i;
+        //await InvokeAsync(StateHasChanged);
+        await GetChapterDataListAsync();
+        // await InvokeAsync(StateHasChanged);
+    }
+
+    private void GoToview(string idDocument, string idChapter)
+    {
+       
+        NavigationManager.NavigateTo($"/view-manga/{idDocument}/{idChapter}");
+    }
+}
